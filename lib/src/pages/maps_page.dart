@@ -30,7 +30,7 @@ class MapsPage extends StatelessWidget {
                           subtitle: Text(scans[i].id.toString()),
                           trailing:
                               Icon(Icons.keyboard_arrow_right, color: Colors.grey),
-                          onTap: () => utils.launchURL(scans[i]),
+                          onTap: () => utils.launchURL(scans[i], context),
                         ),
                         onDismissed: (DismissDirection dismissDirection) {
                           //ScanScript.deleteScan(scans[i].id, DBProvider.db.database);

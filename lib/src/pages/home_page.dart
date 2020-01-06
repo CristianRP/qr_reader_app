@@ -39,13 +39,13 @@ class _HomePageState extends State<HomePage> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.filter_center_focus),
-        onPressed: _scanQR,
+        onPressed: () => _scanQR(context),
         backgroundColor: Theme.of(context).primaryColor,
       ),
     );
   }
 
-  _scanQR() async {
+  _scanQR(BuildContext context) async {
 
     // https://flutter.dev/docs
     // geo:40.74088312736182,-73.97023573359377
@@ -70,10 +70,10 @@ class _HomePageState extends State<HomePage> {
 
       if ( Platform.isIOS ) {
         Future.delayed(Duration(milliseconds: 750), () {
-          utils.launchURL(scan);
+          utils.launchURL(scan, context);
         });
       } else {
-        utils.launchURL(scan);
+        utils.launchURL(scan, context);
       }
     }
 
