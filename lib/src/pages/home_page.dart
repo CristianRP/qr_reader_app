@@ -81,9 +81,9 @@ class _HomePageState extends State<HomePage> {
 
   Widget _callPage(int actualPage) {
     switch (actualPage) {
-      case 0: return MapsPage();
+      case 0: return MapsPage(scanType: 'geo');
         break;
-      case 1: return DirectionsPage();
+      case 1: return MapsPage(scanType: 'http');
         break;
       default:
         return MapsPage();
