@@ -41,6 +41,11 @@ class ScansBloc with Validator {
     //_scansController.sink.add( [] );
   }
 
+  deleteByType(String type) async {
+    await ScanScript.deleteByType(DBProvider.db.database, type);
+    getScans();
+  }
+
   dispose() {
     _scansController?.close();
   }

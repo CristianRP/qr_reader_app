@@ -61,4 +61,9 @@ class ScanScript {
     final db = await database;
     return await db.delete(ScanModel.TABLE_NAME);
   }
+
+  static Future<int> deleteByType(Future<Database> database, String type) async {
+    final db = await database;
+    return await db.delete(ScanModel.TABLE_NAME, where: '${ScanModel.TYPE} = ?', whereArgs: [type]);
+  }
 }

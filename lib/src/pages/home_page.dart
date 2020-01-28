@@ -1,9 +1,9 @@
 import 'dart:io';
 
+import 'package:barcode_scan/barcode_scan.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_reader_app/src/bloc/scans_bloc.dart';
 import 'package:qr_reader_app/src/data/models/scan_model.dart';
-import 'package:qr_reader_app/src/pages/directions_page.dart';
 import 'package:qr_reader_app/src/pages/maps_page.dart';
 
 import 'package:qr_reader_app/src/providers/db_provider.dart';
@@ -19,18 +19,21 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
 
   final scansBloc = ScansBloc();
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   int currentIndex = 0;
+  String scanType;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
         title: Text('QR Scanner'),
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.delete_forever),
-            onPressed: scansBloc.deleteAll,
+            onPressed: () => scansBloc.deleteByType(scanType),
           )
         ],
       ),
@@ -50,23 +53,22 @@ class _HomePageState extends State<HomePage> {
     // https://flutter.dev/docs
     // geo:40.74088312736182,-73.97023573359377
 
-    String futureString = 'https://flutter.dev/docs';
+    String futureString;
+    bool hasError;
 
-    //try {
-    //  futureString = await BarcodeScanner.scan();
-    //} catch (e) {
-    //  futureString = e.toString();
-    //}
-    //print('Future String: $futureString');
+    try {
+      futureString = await BarcodeScanner.scan();
+      hasError = false;
+    } catch (e) {
+      futureString = e.toString();
+      hasError = true;
+    }
+    print('Future String: $futureString');
 
-    if (futureString != null) {
+    if (futureString != null && !hasError) {
       final scan = ScanModel(value: futureString);
       //ScanScript.newScan(scan, DBProvider.db.database);
       scansBloc.addScan(scan);
-
-      final scan2 = ScanModel(value: 'geo:40.74088312736182,-73.97023573359377');
-      //ScanScript.newScan(scan, DBProvider.db.database);
-      scansBloc.addScan(scan2);
 
       if ( Platform.isIOS ) {
         Future.delayed(Duration(milliseconds: 750), () {
@@ -75,15 +77,24 @@ class _HomePageState extends State<HomePage> {
       } else {
         utils.launchURL(scan, context);
       }
+    } else {
+      print('No data to save');
+      _scaffoldKey.currentState.showSnackBar(
+        SnackBar(content: Text('Scaned was canceled'))
+      );
     }
 
   }
 
   Widget _callPage(int actualPage) {
     switch (actualPage) {
-      case 0: return MapsPage(scanType: 'geo');
+      case 0:
+        scanType = 'geo';
+        return MapsPage(scanType: scanType);
         break;
-      case 1: return MapsPage(scanType: 'http');
+      case 1:
+        scanType = 'http';
+        return MapsPage(scanType: scanType);
         break;
       default:
         return MapsPage();
